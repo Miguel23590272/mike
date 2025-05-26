@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Huella Ecológica</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+        
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            width: 100%;
+            max-width: 650px;
+            max-height: 95vh;
+            overflow-y: auto;
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            margin: -30px -30px 30px -30px;
+            border-radius: 20px 20px 0 0;
+            color: white;
+        }
+        
+        .header h1 {
+            margin-bottom: 10px;
+            font-size: 2.2em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header .eco-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .form-section {
+            margin-bottom: 25px;
+        }
+        
+        .form-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+        
+        input[type="text"], select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+        
+        input[type="text"]:focus, select:focus {
+            outline: none;
+            border-color: #3498db;
+            background: white;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .question {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 5px solid #27ae60;
+            transition: transform 0.2s ease;
+        }
+        
+        .question:hover {
+            transform: translateX(5px);
+        }
+        
+        .question p {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+        
+        .question select {
+            background: white;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(39,174,96,0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(-1px);
+        }
+        
+        .btn:disabled {
+            background: linear-gradient(135deg, #95a5a6, #bdc3c7);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .result {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+            border-radius: 15px;
+            margin-top: 20px;
+            box-shadow: 0 10px 30px rgba(243,156,18,0.3);
+        }
+        
+        .result h3 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .percentage {
+            font-size: 4em;
+            font-weight: bold;
+            margin: 30px 0;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        .impact-level {
+            display: inline-block;
+            padding: 12px 25px;
+            border-radius: 25px;
+            color: white;
+            font-weight: bold;
+            margin: 15px 0;
+            font-size: 1.2em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        .low { 
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            box-shadow: 0 5px 15px rgba(39,174,96,0.4);
+        }
+        .medium { 
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            box-shadow: 0 5px 15px rgba(243,156,18,0.4);
+        }
+        .high { 
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            box-shadow: 0 5px 15px rgba(231,76,60,0.4);
+        }
+        
+        .recommendations {
+            background: linear-gradient(135deg, #e8f5e8, #d5e8d5);
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 25px;
+            border: 2px solid #27ae60;
+        }
+        
+        .recommendations h4 {
+            color: #27ae60;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            text-align: center;
+        }
+        
+        .recommendations ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        
+        .recommendations li {
+            background: white;
+            padding: 15px;
+            margin: 12px 0;
+            border-radius: 8px;
+            border-left: 4px solid #27ae60;
+            transition: transform 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .recommendations li:hover {
+            transform: translateX(5px);
+        }
+        
+        .user-info {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        
+        .user-info h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #ecf0f1;
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+            border-radius: 4px;
+            transition: width 1s ease;
+        }
+        
+        .question-counter {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #7f8c8d;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+                margin: 5px;
+            }
+            
+            .header {
+                margin: -20px -20px 20px -20px;
+                padding: 15px 0;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .percentage {
+                font-size: 3em;
+            }
+            
+            .question {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="eco-icon">🌱</div>
+            <h1>Calculadora de Huella Ecológica</h1>
+            <p>Huella Ecológica: El Desafío de Vivir sin Dejar Marcas</p>
+            <p>La huella ecológica es un indicador que mide el impacto de las actividades humanas sobre el medio ambiente.</p>
+            <p>Para calcularla, se toman en cuenta factores como:
+- Consumo de recursos: alimentos, energía, bienes materiales.
+- Generación de residuos: emisiones de CO₂, desechos sólidos.
+- Uso del suelo: áreas destinadas a agricultura, ganadería, infraestructura.
+</p>
+        </div>
+        
+        <!-- Formulario de Registro -->
+        <div id="registerForm">
+            <div class="form-section">
+                <h2>👤 Información Personal</h2>
+                <div class="form-group">
+                    <label for="nombre">Nombre *</label>
+                    <input type="text" id="nombre" placeholder="Escribe tu nombre" required>
+                </div>
+                <div class="form-group">
+                    <label for="apellidos">Apellidos *</label>
+                    <input type="text" id="apellidos" placeholder="Escribe tus apellidos" required>
+                </div>
+                <div class="form-group">
+                    <label for="carrera">Ingresa tu edad *</label>
+                    <input type="text" id="carrera" placeholder="Ejemplo:18" required>
+                </div>
+            </div>
+            
+            <button class="btn" onclick="startQuestionnaire()">🌍 Continuar al Cuestionario</button>
+        </div>
+        
+        <!-- Cuestionario -->
+        <div id="questionnaire" class="hidden">
+            <div class="question-counter">
+                <span id="currentQuestion">1</span> de 10 preguntas
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 10%"></div>
+            </div>
+            
+            <div class="form-section">
+                <h2>🏠 Cuestionario Ecológico</h2>
+                
+                <div class="question">
+                    <p>1. ¿De qué tamaño es tu casa?</p>
+                    <select id="tamano_casa" onchange="updateProgress()">
+                        <option value="">Selecciona una opción</option>
+                        <option value="1">Pequeña (menos de 50 m²)</option>
+                        <option value="2">Mediana (50-100 m²)</option>
+                        <option value="3">Grande (100-200 m²)</option>
+                        <option value="4">Muy grande (más de 200 m²)</option>
+                    </select>
+                </div>
+                
+                <div class="question">
+                    <p>2. ¿Tipo de vivienda donde vives?</p>
+                    <select id="tipo_vivienda" onchange="updateProgress()">
+                        <option value="">Selecciona una opción</option>
+                        <option value="1">Apartamento</option>
+                        <option value="2">Casa unifamiliar</option>
+                        <option value="3">Casa familiar</option>
+                        <option value="4">Casa rural/finca</option>
+                    </select>
+                </div>
+                
+                <div class="question">
+                    <p>3. ¿Que tipo de productos de limpieza usas?</p>
+                    <select id="actividad_impacto" onchange="updateProgress()">
+                        <option value="">Selecciona una opción</option>
+                        <option value="1">Detergentes</option>
+                        <option value="2">Detergentes Biodregadables</option>
+                    </select>
+                </div>
+                
+                <div class="question">
+                    <p>4. ¿Cuantos Focos tienes en tu casa?</p>
+                    <select id="gas_invernadero" onchange="updateProgress()">
+                        <option value="">Selecciona una opción</option>
+                        <option value="4">1 a 3</option>
+                        <option value="2">3 a 5</option>
+                        <option value="1">5 a 7</option>
+                        <option value="3">7 a 10</option>
+                    </select>
+                </div>
+                
+                <div class="question">
+                    <p>5. ¿Con que frecuencia utilizas aparatos electricos?</p>
+                    <select id="material_casa" onchange="updateProgress()">
+                        <option value="">Selecciona una opción</option>
+                        <option value="1">Siempre</option>
+                        <option value="2">Regularmente</option>
+                        <option value="3">Casi nunca</option>
+                        <option value="4">Nunca</option>
+                    </select>
+                </div>
+                
+                <div class="question">
+                    <p>6. ¿Cuántas personas viven en tu hogar?</p>
+                    <select id="personas_hogar" onchange="updateProgress()">
+                        <option value="">Selecciona una opción</option>
+                        <option value="4">1 persona (mayor impacto per cápita)</option>
+                        <option value="2">2-3 personas</option>
+                        <option value="1">4-5 personas</option>
+                        <option value="3">Más de 5 personas</option>
+                    </select>
+                </div>
+                
+                <div class="question">
+                    <p>7. ¿Tienes electricidad?</p>
+                    <select id="electricidad" onchange="updateProgress()">
+                        <option value="">Selecciona una opción</option>
+                        <option value="3">Sí, servicio completo</option>
+                        <option value="2">Sí, pero con interrupciones</option>
+                        <option value="4">Parcialmente (generador/combustible)</option>
+                        <option value="1">No tengo electricidad</option>
+                    </select>
+                </div>
+                
+                <div class="question">
+                    <p>8. ¿Qué porcentaje de la electricidad de tu casa proviene de fuentes renovables?</p>
+                    <select id="energia_renovable" onchange="updateProgress()">
+                        <option value="">Selecciona una opción</option>
+                        <option value="1">81-100% renovable</option>
+                        <option value="2">51-80% renovable</option>
+                        <option value="3">21-50% renovable</option>
+                        <option value="4">0-20% renovable</option>
+                    </select>
+                </div>
+                
+                <div class="question">
+                    <p>9. ¿Cuánta basura generas a la semana?</p>
+                    <select id="basura_semanal" onchange="updateProgress()">
+                        <option value="">Selecciona una opción</option>
+                        <option value="1">Menos de 1 bolsa (reciclo mucho)</option>
+                        <option value="2">1-2 bolsas</option>
+                        <option value="3">3-4 bolsas</option>
+                        <option value="4">Más de 4 bolsas</option>
+                    </select>
+                </div>
+                
+                <div class="question">
+                    <p>10. ¿Qué medio de transporte ocupas principalmente?</p>
+                    <select id="transporte" onchange="updateProgress()">
+                        <option value="">Selecciona una opción</option>
+                        <option value="1">Bicicleta/Caminar</option>
+                        <option value="2">Transporte público</option>
+                        <option value="3">Auto compartido/Ocasional</option>
+                        <option value="4">Auto propio diario</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button class="btn" onclick="calculateFootprint()" id="calculateBtn">📊 Calcular Mi Huella Ecológica</button>
+        </div>
+        
+        <!-- Resultados -->
+        <div id="results" class="hidden">
+            <div id="userInfo"></div>
+            <div id="footprintResult"></div>
+            <div id="recommendations"></div>
+            <button class="btn" onclick="resetForm()" style="margin-top: 25px;">🔄 Realizar Nuevo Cálculo</button>
+        </div>
+    </div>
+
+    <script>
+        let userData = {};
+        let answeredQuestions = 0;
+
+        function startQuestionnaire() {
+            const nombre = document.getElementById('nombre').value.trim();
+            const apellidos = document.getElementById('apellidos').value.trim();
+            const carrera = document.getElementById('carrera').value.trim();
+            
+            if (!nombre || !apellidos || !carrera) {
+                alert('⚠️ Por favor, completa todos los campos de información personal.');
+                return;
+            }
+            
+            userData = { nombre, apellidos, carrera };
+            
+            document.getElementById('registerForm').classList.add('hidden');
+            document.getElementById('questionnaire').classList.remove('hidden');
+        }
+
+        function updateProgress() {
+            const questions = [
+                'tamano_casa', 'tipo_vivienda', 'limpieza', 'focos',
+                'material_casa', 'personas_hogar', 'electricidad', 'energia_renovable',
+                'basura_semanal', 'transporte'
+            ];
+            
+            answeredQuestions = 0;
+            questions.forEach(questionId => {
+                if (document.getElementById(questionId).value !== '') {
+                    answeredQuestions++;
+                }
+            });
+            
+            const progressPercentage = (answeredQuestions / questions.length) * 100;
+            document.getElementById('progressFill').style.width = progressPercentage + '%';
+            document.getElementById('currentQuestion').textContent = answeredQuestions + 1;
+            
+            // Habilitar botón cuando todas las preguntas estén respondidas
+            const calculateBtn = document.getElementById('calculateBtn');
+            if (answeredQuestions === questions.length) {
+                calculateBtn.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
+                calculateBtn.innerHTML = '🎉 ¡Calcular Mi Huella Ecológica!';
+            }
+        }
+
+        function calculateFootprint() {
+            const questions = [
+                'tamano_casa', 'tipo_vivienda', 'actividad_impacto', 'gas_invernadero',
+                'material_casa', 'personas_hogar', 'electricidad', 'energia_renovable',
+                'basura_semanal', 'transporte'
+            ];
+            
+            let totalScore = 0;
+            let answeredQuestions = 0;
+            
+            for (let question of questions) {
+                const value = document.getElementById(question).value;
+                if (value === '') {
+                    alert('⚠️ Por favor, responde todas las preguntas antes de continuar.');
+                    return;
+                }
+                totalScore += parseInt(value);
+                answeredQuestions++;
+            }
+            
+            const averageScore = totalScore / answeredQuestions;
+            const footprintPercentage = Math.round((averageScore / 4) * 100);
+            
+            showResults(footprintPercentage, totalScore);
+        }
+
+        function showResults(percentage, totalScore) {
+            document.getElementById('questionnaire').classList.add('hidden');
+            
+            // Mostrar información del usuario
+            const userInfoDiv = document.getElementById('userInfo');
+            userInfoDiv.innerHTML = `
+                <div class="user-info">
+                    <h3>👤 ${userData.nombre} ${userData.apellidos}</h3>
+                    <p><strong>📚 Carrera:</strong> ${userData.carrera}</p>
+                    <p><strong>📊 Puntuación Total:</strong> ${totalScore}/40 puntos</p>
+                </div>
+            `;
+            
+            // Determinar nivel de impacto
+            let impactLevel, impactClass, impactMessage, impactIcon;
+            if (percentage <= 35) {
+                impactLevel = "BAJO";
+                impactClass = "low";
+                impactIcon = "🌿";
+                impactMessage = "¡Excelente! Tu huella ecológica es baja. Eres un ejemplo a seguir en cuidado ambiental.";
+            } else if (percentage <= 65) {
+                impactLevel = "MODERADO";
+                impactClass = "medium";
+                impactIcon = "⚠️";
+                impactMessage = "Tu huella ecológica es moderada. Con algunos cambios puedes mejorar significativamente.";
+            } else {
+                impactLevel = "ALTO";
+                impactClass = "high";
+                impactIcon = "🚨";
+                impactMessage = "Tu huella ecológica es alta. Es momento de tomar medidas urgentes para reducir tu impacto.";
+            }
+            
+            // Mostrar resultado
+            const resultDiv = document.getElementById('footprintResult');
+            resultDiv.innerHTML = `
+                <div class="result">
+                    <h3>${impactIcon} Tu Huella Ecológica</h3>
+                    <div class="percentage">${percentage}%</div>
+                    <div class="impact-level ${impactClass}">IMPACTO ${impactLevel}</div>
+                    <p style="font-size: 1.1em; margin-top: 15px;">${impactMessage}</p>
+                </div>
+            `;
+            
+            // Generar recomendaciones
+            const recommendations = generateRecommendations(percentage, totalScore);
+            const recommendationsDiv = document.getElementById('recommendations');
+            recommendationsDiv.innerHTML = `
+                <div class="recommendations">
+                    <h4>💡 Plan de Acción para Reducir tu Huella Ecológica</h4>
+                    <ul>
+                        ${recommendations.map(rec => `<li>🌱 ${rec}</li>`).join('')}
+                    </ul>
+                    <div style="text-align: center; margin-top: 20px; padding: 15px; background: rgba(39,174,96,0.1); border-radius: 8px;">
+                        <strong>🎯 Meta:</strong> Reduce tu huella ecológica en un 20% en los próximos 6 meses
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('results').classList.remove('hidden');
+        }
+
+        function generateRecommendations(percentage, totalScore) {
+            const recommendations = [];
+            
+            // Recomendaciones específicas basadas en el nivel
+            if (percentage > 70) {
+                recommendations.push("🚗 Cambia tu auto por transporte público, bicicleta o vehículo eléctrico");
+                recommendations.push("⚡ Instala paneles solares o contrata energía 100% renovable");
+                recommendations.push("🥩 Reduce el consumo de carne a 2-3 veces por semana máximo");
+                recommendations.push("♻️ Implementa un sistema de reciclaje completo en tu hogar");
+                recommendations.push("🏠 Mejora el aislamiento térmico de tu casa para reducir consumo energético");
+            } else if (percentage > 50) {
+                recommendations.push("🚌 Usa más el transporte público y reduce el uso del auto personal");
+                recommendations.push("💡 Cambia todas las bombillas a LED y desconecta aparatos en standby");
+                recommendations.push("🥬 Aumenta el consumo de alimentos locales y de temporada");
+                recommendations.push("♻️ Separa correctamente los residuos y comienza a compostar");
+                recommendations.push("💧 Instala dispositivos ahorradores de agua en grifos y duchas");
+            } else if (percentage > 30) {
+                recommendations.push("🚴 Combina más la bicicleta con el transporte público");
+                recommendations.push("🌱 Crea un huerto urbano para autoconsumo de vegetales");
+                recommendations.push("👕 Compra ropa de segunda mano y repara en lugar de desechar");
+                recommendations.push("📱 Extiende la vida útil de tus dispositivos electrónicos");
+            } else {
+                recommendations.push("🌟 ¡Comparte tus buenas prácticas con amigos y familiares!");
+                recommendations.push("👥 Conviértete en embajador ambiental en tu universidad");
+                recommendations.push("📚 Enseña a otros estudiantes sobre sostenibilidad");
+            }
+            
+            // Recomendaciones generales adicionales
+            const generalRecommendations = [
+                "🌳 Participa en programas de reforestación o adopta un árbol",
+                "📖 Educate continuamente sobre sostenibilidad y cambio climático",
+                "🏢 Promueve prácticas sostenibles en tu universidad o trabajo",
+                "💚 Únete a organizaciones ambientales estudiantiles",
+                "📊 Calcula tu huella cada 6 meses para ver tu progreso"
+            ];
+            
+            // Añadir 2-3 recomendaciones generales
+            const selectedGeneral = generalRecommendations.slice(0, 3);
+            recommendations.push(...selectedGeneral);
+            
+            return recommendations.slice(0, 8); // Limitar a 8 recomendaciones máximo
+        }
+
+        function resetForm() {
+            // Limpiar formularios
+            document.getElementById('nombre').value = '';
+            document.getElementById('apellidos').value = '';
+            document.getElementById('edada').value = '';
+            
+            const selects = document.querySelectorAll('select');
+            selects.forEach(select => select.value = '');
+            
+            // Resetear variables
+            userData = {};
+            answeredQuestions = 0;
+            
+            // Resetear progreso
+            document.getElementById('progressFill').style.width = '0%';
+            document.getElementById('currentQuestion').textContent = '1';
+            document.getElementById('calculateBtn').innerHTML = '📊 Calcular Mi Huella Ecológica';
+            document.getElementById('calculateBtn').style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
+            
+            // Mostrar formulario inicial
+            document.getElementById('results').classList.add('hidden');
+            document.getElementById('questionnaire').classList.add('hidden');
+            document.getElementById('registerForm').classList.remove('hidden');
+        }
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🌱 Calculadora de Huella Ecológica cargada correctamente');
+        });
+    </script>
+</body>
+</html>
